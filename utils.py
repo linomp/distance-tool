@@ -29,7 +29,7 @@ def get_distance_in_km(source: str, dest: str, api_key: str):
 
 
 def load_api_key():
-    key = os.getenv('GOOGLE_MAPS_API_KEY')
+    key = os.getenv('GOOGLE_MAPS_API_KEY', None)
     if not key:
         with open('.env', 'r') as f:
             key = f.read().split('=')[1]
@@ -39,7 +39,7 @@ def load_api_key():
     return key
 
 
-def process_input_file(input_file: str | BytesIO, api_key: str | None = None):
+def process_input_file(input_file: str | BytesIO, api_key: str | None = None, save_local: bool = False):
     """
     Function that reads the 2 first columns of an excel file, and calls the get_distance_in_km function, then writes the result in a new column, and saves the file as a new excel file
     """
@@ -64,9 +64,10 @@ def process_input_file(input_file: str | BytesIO, api_key: str | None = None):
     # output_file_name is the same as input but "with_distances" and the current time in hh:mm:ss
     output_file_name = 'computed_distances_' + time.strftime("%H_%M_%S") + '.xlsx'
 
-    # df.to_excel(output_file_name, index=False, header=["Source", "Destination", "Distance (km)"])
-
-    return to_excel(df, header=["Source", "Destination", "Distance (km)"]), output_file_name
+    if save_local:
+        df.to_excel(output_file_name, index=False, header=["Source", "Destination", "Distance (km)"])
+    else:
+        return to_excel(df, header=["Source", "Destination", "Distance (km)"]), output_file_name
 
 
 def to_excel(df, header=None):
@@ -79,4 +80,4 @@ def to_excel(df, header=None):
 
 
 if __name__ == '__main__':
-    process_input_file("input.xlsx")
+    process_input_file("input.xlsx", save_local=True)
