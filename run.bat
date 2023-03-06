@@ -1,2 +1,1 @@
-call venv\Scripts\activate.bat
-python utils.py
+call venv\Scripts\activate.bat && pip install -r requirements.txt && python utils.py
